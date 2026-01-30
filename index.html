@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Questionario</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 700px;
+    margin: auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+h1 {
+    margin-top: 0;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 15px;
+}
+
+input[type="text"],
+input[type="email"],
+textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+textarea {
+    min-height: 80px;
+}
+
+input.error,
+textarea.error {
+    border-color: #e74c3c;
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 0.9em;
+    display: none;
+}
+
+.error-message.show {
+    display: block;
+}
+
+#reparti label {
+    font-weight: normal;
+    display: block;
+    margin-top: 5px;
+}
+
+#altro-wrapper {
+    display: none;
+    margin-top: 10px;
+}
+
+button {
+    margin-top: 20px;
+    padding: 12px 20px;
+    border: none;
+    background: #007bff;
+    color: white;
+    font-size: 1em;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+button.loading {
+    background: #999;
+}
+
+.report-counter {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.report-counter.medium {
+    color: #e67e22;
+}
+
+.report-counter.good {
+    color: #27ae60;
+}
+
+#successScreen {
+    display: none;
+    text-align: center;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container" id="formContainer">
+    <h1>Questionario</h1>
+
+    <form id="questionarioForm">
+
+        <label for="nome">Nome</label>
+        <input type="text" id="nome">
+        <div class="error-message" id="err-nome">Nome obbligatorio</div>
+
+        <label for="cognome">Cognome</label>
+        <input type="text" id="cognome">
+        <div class="error-message" id="err-cognome">Cognome obbligatorio</div>
+
+        <label for="email">Email</label>
+        <input type="email" id="email">
+        <div class="error-message" id="err-email">Email non valida</div>
+
+        <label>Reparti</label>
+        <div id="reparti">
+            <label><input type="checkbox" value="Produzione"> Produzione</label>
+            <label><input type="checkbox" value="Logistica"> Logistica</label>
+            <label><input type="checkbox" value="Amministrazione"> Amministrazione</label>
+            <label>
+                <input type="checkbox" id="rb-altro" value="Altro"> Altro
+            </label>
+        </div>
+        <div class="error-message" id="err-reparti">Seleziona almeno un reparto</div>
+
+        <div id="altro-wrapper">
+            <label for="altro-reparto">Specifica altro reparto</label>
+            <input type="text" id="altro-reparto">
+        </div>
+
+        <label>Report (max 5)</label>
+        <textarea id="r1" placeholder="Report 1"></textarea>
+        <textarea id="r2" placeholder="Report 2"></textarea>
+        <textarea id="r3" placeholder="Report 3"></textarea>
+        <textarea id="r4" placeholder="Report 4"></textarea>
+        <textarea id="r5" placeholder="Report 5"></textarea>
+
+        <div class="error-message" id="err-report"></div>
+        <div class="report-counter" id="counter"></div>
+
+        <label for="note">Note aggiuntive</label>
+        <textarea id="note"></textarea>
+
+        <button type="submit" id="btnSubmit">Invia Questionario</button>
+    </form>
+</div>
+
+<div class="container" id="successScreen">
+    <h1>✅ Grazie!</h1>
+    <p>Il questionario è stato inviato correttamente.</p>
+</div>
+
+<script>
+const form          = document.getElementById('questionarioForm');
+const btnSubmit     = document.getElementById('btnSubmit');
+const successScreen = document.getElementById('successScreen');
+const formContainer = document.getElementById('formContainer');
+const counterEl     = document.getElementById('counter');
+
+const altroChk      = document.getElementById('rb-altro');
+const altroWrapper  = document.getElementById('altro-wrapper');
+
+// Mostra/nasconde "Altro"
+altroChk.addEventListener('change', () => {
+    altroWrapper.style.display = altroChk.checked ? 'block' : 'none';
+    if (!altroChk.checked) document.getElementById('altro-reparto').value = '';
+});
+
+// Contatore report
+function updateCounter() {
+    let count = 0;
+    for (let i = 1; i <= 5; i++) {
+        if (document.getElementById('r' + i).value.trim()) count++;
+    }
+    counterEl.textContent = count + ' / 5 report inseriti';
+    counterEl.className = 'report-counter ' + 
+        (count >= 3 ? 'good' : count >= 1 ? 'medium' : '');
+}
+document.querySelectorAll('#r1,#r2,#r3,#r4,#r5')
+    .forEach(el => el.addEventListener('input', updateCounter));
+updateCounter();
+
+// Pulisci errori
+form.querySelectorAll('input, textarea').forEach(field => {
+    field.addEventListener('input', () => {
+        field.classList.remove('error');
+        const err = document.getElementById('err-' + field.id);
+        if (err) err.classList.remove('show');
+    });
+});
+
+// Validazione
+function validate() {
+    let valid = true;
+
+    const nome = document.getElementById('nome').value.trim();
+    document.getElementById('nome').classList.toggle('error', !nome);
+    document.getElementById('err-nome').classList.toggle('show', !nome);
+    if (!nome) valid = false;
+
+    const cognome = document.getElementById('cognome').value.trim();
+    document.getElementById('cognome').classList.toggle('error', !cognome);
+    document.getElementById('err-cognome').classList.toggle('show', !cognome);
+    if (!cognome) valid = false;
+
+    const emailVal = document.getElementById('email').value.trim();
+    let emailOk = emailVal && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal);
+    document.getElementById('email').classList.toggle('error', !emailOk);
+    document.getElementById('err-email').classList.toggle('show', !emailOk);
+    if (!emailOk) valid = false;
+
+    const repartiOk = document.querySelectorAll('#reparti input:checked').length > 0;
+    document.getElementById('err-reparti').classList.toggle('show', !repartiOk);
+    if (!repartiOk) valid = false;
+
+    let reportCount = 0;
+    for (let i = 1; i <= 5; i++) {
+        if (document.getElementById('r' + i).value.trim()) reportCount++;
+    }
+    const reportOk = reportCount >= 1;
+    document.getElementById('err-report').textContent =
+        reportOk ? "" : "Inserisci almeno un report importante";
+    document.getElementById('err-report').classList.toggle('show', !reportOk);
+    if (!reportOk) valid = false;
+
+    if (!valid) {
+        const firstError = form.querySelector('.error, .error-message.show');
+        firstError?.scrollIntoView({behavior: 'smooth', block: 'center'});
+    }
+
+    return valid;
+}
+
+// Submit
+form.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    btnSubmit.disabled = true;
+    btnSubmit.classList.add('loading');
+    btnSubmit.textContent = 'Invio in corso…';
+
+    const data = {
+        nome: nome.value,
+        cognome: cognome.value,
+        email: email.value,
+        reparti: Array.from(document.querySelectorAll('#reparti input:checked')).map(cb => cb.value),
+        altroReparto: altroChk.checked ? document.getElementById('altro-reparto').value.trim() : '',
+        reports: [r1.value, r2.value, r3.value, r4.value, r5.value].filter(v => v),
+        note: note.value.trim()
+    };
+
+    try {
+        const res = await fetch('https://script.google.com/macros/s/AKfycby5Hbf3kGCDOujg4HmP_NUBOkx9pjo9UIfccWMG_m042bVTOQQV9UBYFxjNQ_U5FUiCnA/exec', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+        if (result.status === 'success') {
+            formContainer.style.display = 'none';
+            successScreen.style.display = 'block';
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        } else {
+            alert('Errore server');
+        }
+    } catch {
+        alert('Errore di connessione');
+    } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.classList.remove('loading');
+        btnSubmit.textContent = 'Invia Questionario';
+    }
+});
+</script>
+
+</body>
+</html>

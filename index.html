@@ -6,7 +6,6 @@
 <title>Questionario Report QlikView - Goline IT Services</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* TUTTI GLI STILI RIMANGONO IDENTICI - NON HO TOCCATO NESSUN CSS */
 :root {
 --goline-teal: #0d95a8;
 --goline-dark: #2c3e50;
@@ -80,12 +79,6 @@ border-radius: 16px;
 box-shadow: var(--shadow-medium);
 margin-bottom: 2rem;
 display: inline-block;
-}
-
-.logo {
-max-width: 280px;
-height: auto;
-display: block;
 }
 
 h1 {
@@ -295,43 +288,44 @@ gap: 1rem;
 display: inline-flex;
 align-items: center;
 justify-content: center;
-min-width: 42px;
-height: 42px;
-background: var(--goline-teal);
+min-width: 36px;
+height: 36px;
+background: linear-gradient(135deg, var(--goline-teal) 0%, var(--goline-accent) 100%);
 color: white;
 border-radius: 8px;
+font-size: 0.9rem;
 font-weight: 700;
-font-size: 1rem;
+font-family: 'Space Mono', monospace;
 }
 
 .report-input {
 flex: 1;
 }
 
-.report-inputs.error .report-input-wrapper:first-child .report-input {
+.report-inputs.error .report-input:first-child {
 border-color: var(--error-red);
 background: #fef2f2;
 }
 
 .submit-section {
-margin-top: 3rem;
-text-align: center;
+margin-top: 2.5rem;
+padding-top: 2rem;
+border-top: 2px solid #f1f5f9;
 }
 
 button[type="submit"] {
-padding: 1.25rem 3rem;
-font-size: 1.15rem;
+width: 100%;
+padding: 1.25rem 2rem;
+font-size: 1.1rem;
 font-weight: 600;
-font-family: 'Outfit', sans-serif;
 color: white;
-background: linear-gradient(135deg, var(--goline-teal), var(--goline-accent));
+background: linear-gradient(135deg, var(--goline-teal) 0%, var(--goline-accent) 100%);
 border: none;
 border-radius: 12px;
 cursor: pointer;
 transition: all 0.3s ease;
 box-shadow: var(--shadow-medium);
-text-transform: uppercase;
-letter-spacing: 0.05em;
+font-family: 'Outfit', sans-serif;
 }
 
 button[type="submit"]:hover {
@@ -344,31 +338,30 @@ transform: translateY(0);
 }
 
 button[type="submit"]:disabled {
-opacity: 0.6;
+opacity: 0.7;
 cursor: not-allowed;
 transform: none;
 }
 
 .success-message {
+display: none;
 background: white;
 border-radius: 20px;
-padding: 4rem 3rem;
-box-shadow: var(--shadow-strong);
+padding: 3rem;
 text-align: center;
-display: none;
+box-shadow: var(--shadow-strong);
 animation: fadeInUp 0.8s ease;
 }
 
 .success-message h2 {
-font-size: 2rem;
-color: var(--goline-teal);
+color: #10b981;
+font-size: 1.8rem;
 margin-bottom: 1rem;
 }
 
 .success-message p {
-font-size: 1.1rem;
 color: #64748b;
-line-height: 1.6;
+font-size: 1.1rem;
 }
 
 .validation-summary {
@@ -382,49 +375,56 @@ display: none;
 
 .validation-summary.show {
 display: block;
-animation: slideIn 0.4s ease;
+animation: shake 0.4s ease;
 }
 
 .validation-summary h3 {
 color: var(--error-red);
 font-size: 1.1rem;
 margin-bottom: 1rem;
-font-weight: 600;
 }
 
 .validation-summary ul {
-list-style: none;
-padding: 0;
+margin-left: 1.5rem;
+color: var(--error-red);
 }
 
 .validation-summary li {
-color: var(--error-red);
-font-size: 0.95rem;
 margin-bottom: 0.5rem;
-padding-left: 1.5rem;
-position: relative;
-}
-
-.validation-summary li::before {
-content: '•';
-position: absolute;
-left: 0.5rem;
-font-weight: 700;
+font-weight: 500;
 }
 
 @keyframes fadeInDown {
-from { opacity: 0; transform: translateY(-30px); }
-to   { opacity: 1; transform: translateY(0); }
+from {
+opacity: 0;
+transform: translateY(-30px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
 }
 
 @keyframes fadeInUp {
-from { opacity: 0; transform: translateY(30px); }
-to   { opacity: 1; transform: translateY(0); }
+from {
+opacity: 0;
+transform: translateY(30px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
 }
 
 @keyframes slideIn {
-from { opacity: 0; transform: translateX(-20px); }
-to   { opacity: 1; transform: translateX(0); }
+from {
+opacity: 0;
+transform: translateX(-20px);
+}
+to {
+opacity: 1;
+transform: translateX(0);
+}
 }
 
 @keyframes shake {
@@ -433,12 +433,22 @@ to   { opacity: 1; transform: translateX(0); }
 75% { transform: translateX(10px); }
 }
 
-@media (max-width: 640px) {
-.form-card { padding: 2rem 1.5rem; }
-.input-row { grid-template-columns: 1fr; }
-h1 { font-size: 1.5rem; }
-.logo { max-width: 220px; }
-button[type="submit"] { width: 100%; }
+@media (max-width: 768px) {
+.input-row {
+grid-template-columns: 1fr;
+}
+
+.form-card {
+padding: 2rem 1.5rem;
+}
+
+h1 {
+font-size: 1.6rem;
+}
+
+.subtitle {
+font-size: 1rem;
+}
 }
 </style>
 </head>
@@ -446,11 +456,11 @@ button[type="submit"] { width: 100%; }
 <div class="container">
 <div class="header">
 <div class="logo-container">
-<h1 style="color: var(--goline-teal); font-size: 2.5rem; margin: 0;">goline</h1>
+<h1 style="color: var(--goline-teal); font-size: 2.5rem; margin: 0;">GOLINE</h1>
 <p style="color: var(--goline-dark); font-size: 1.25rem; margin-top: 0.5rem; font-weight: 400;">IT Services</p>
 </div>
-<h1>Questionario Report QlikView per Reparto</h1>
-<p class="subtitle">Aiutaci a identificare i 5 report QlikView più utilizzati e importanti nel tuo reparto, che verranno successivamente migrati su Power BI</p>
+<h1>Questionario Report QlikView</h1>
+<p class="subtitle">Compila questo questionario per aiutarci a identificare i report QlikView più utilizzati nel tuo reparto.<br>Le tue risposte saranno fondamentali per pianificare la migrazione a Power BI.</p>
 </div>
 
 <div class="form-card" id="formCard">
@@ -494,8 +504,8 @@ Contatto
 <span class="section-number">3</span>
 Reparti di Competenza
 </div>
-<label>Seleziona i reparti di cui sei responsabile o in cui lavori <span class="required">*</span></label>
-<p class="helper-text">Puoi selezionare più reparti se fai parte di più team. Almeno un reparto è obbligatorio.</p>
+<label>Seleziona i reparti di cui sei responsabile o per cui compili questo questionario <span class="required">*</span></label>
+<p class="helper-text">Puoi selezionare più reparti se necessario. Almeno un reparto è obbligatorio.</p>
 <div class="checkbox-group" id="repartiGroup">
 <div class="checkbox-item">
 <input type="checkbox" id="dispo-bag" name="reparti" value="Dispo BAG">
@@ -518,12 +528,12 @@ Reparti di Competenza
 <label for="direzione">Direzione</label>
 </div>
 <div class="checkbox-item">
-<input type="checkbox" id="logistica" name="reparti" value="Logistica">
-<label for="logistica">Logistica</label>
+<input type="checkbox" id="logistica-trasporti" name="reparti" value="Logistica/Trasporti">
+<label for="logistica-trasporti">Logistica/Trasporti</label>
 </div>
 <div class="checkbox-item">
-<input type="checkbox" id="trasporti" name="reparti" value="Trasporti">
-<label for="trasporti">Trasporti</label>
+<input type="checkbox" id="prepack" name="reparti" value="Prepack">
+<label for="prepack">Prepack</label>
 </div>
 <div class="checkbox-item">
 <input type="checkbox" id="controllo-merci" name="reparti" value="Controllo entrata merci">
@@ -542,28 +552,28 @@ Reparti di Competenza
 <span class="section-number">4</span>
 Top 5 Report QlikView
 </div>
-<label>Indica i nomi dei 5 report QlikView più utilizzati e importanti del tuo reparto <span class="required">*</span></label>
-<p class="helper-text">Questi report verranno prioritizzati per la migrazione su Power BI. Elencali in ordine di importanza o frequenza d'uso. Almeno il primo report è obbligatorio.</p>
+<label>Indica i 5 report QlikView più utilizzati nel tuo reparto <span class="required">*</span></label>
+<p class="helper-text">Elenca i report QlikView in ordine di importanza o frequenza d'uso. Questi report verranno prioritizzati nella migrazione a Power BI. È obbligatorio indicare almeno il primo report.</p>
 <div class="report-inputs" id="reportInputs">
 <div class="report-input-wrapper">
 <span class="report-number">#1</span>
-<input type="text" id="report1" name="report1" class="report-input" placeholder="Nome del report QlikView più importante" required>
+<input type="text" id="report1" name="report1" class="report-input" placeholder="Nome del report più importante o utilizzato" required>
 </div>
 <div class="report-input-wrapper">
 <span class="report-number">#2</span>
-<input type="text" id="report2" name="report2" class="report-input" placeholder="Nome del secondo report QlikView">
+<input type="text" id="report2" name="report2" class="report-input" placeholder="Nome del secondo report">
 </div>
 <div class="report-input-wrapper">
 <span class="report-number">#3</span>
-<input type="text" id="report3" name="report3" class="report-input" placeholder="Nome del terzo report QlikView">
+<input type="text" id="report3" name="report3" class="report-input" placeholder="Nome del terzo report">
 </div>
 <div class="report-input-wrapper">
 <span class="report-number">#4</span>
-<input type="text" id="report4" name="report4" class="report-input" placeholder="Nome del quarto report QlikView">
+<input type="text" id="report4" name="report4" class="report-input" placeholder="Nome del quarto report">
 </div>
 <div class="report-input-wrapper">
 <span class="report-number">#5</span>
-<input type="text" id="report5" name="report5" class="report-input" placeholder="Nome del quinto report QlikView">
+<input type="text" id="report5" name="report5" class="report-input" placeholder="Nome del quinto report">
 </div>
 </div>
 <div class="error-message" id="reportsError">Inserisci almeno il primo report</div>
@@ -575,8 +585,8 @@ Top 5 Report QlikView
 Note e Problemi
 </div>
 <label for="note">Note aggiuntive (opzionale)</label>
-<p class="helper-text">Segnala eventuali problemi, difficoltà o necessità specifiche riguardo ai report QlikView attuali che vorresti vedere risolti nella migrazione a Power BI</p>
-<textarea id="note" name="note" rows="6" placeholder="Es: Il report X è lento nel caricamento, il report Y ha dati non aggiornati, il report Z è difficile da usare..."></textarea>
+<p class="helper-text">Segnala eventuali problemi, difficoltà o necessità specifiche riguardo ai report QlikView attuali che vorresti vedere migliorati nella migrazione a Power BI.</p>
+<textarea id="note" name="note" rows="6" placeholder="Es: Il report X è lento, il report Y ha dati non sempre aggiornati, il report Z è complesso da utilizzare..."></textarea>
 </div>
 
 <div class="submit-section">
@@ -587,12 +597,11 @@ Note e Problemi
 
 <div class="success-message" id="successMessage">
 <h2>✓ Questionario Inviato con Successo!</h2>
-<p>Grazie per aver completato il questionario. Le tue risposte sono state registrate.</p>
+<p>Grazie per aver completato il questionario. Le tue risposte sono state registrate correttamente.</p>
 </div>
 </div>
 
 <script>
-// JavaScript modificato - rimossa tutta la parte relativa ad "Altro"
 const form = document.getElementById('reportForm');
 const formCard = document.getElementById('formCard');
 const successMessage = document.getElementById('successMessage');
@@ -734,7 +743,7 @@ window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 });
 
-// Gestione click sugli item checkbox (rimane invariata)
+// Gestione click sugli item checkbox
 document.querySelectorAll('.checkbox-item').forEach(item => {
 item.addEventListener('click', function(e) {
 if (e.target.tagName !== 'INPUT') {

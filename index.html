@@ -271,6 +271,21 @@
             border-color: var(--goline-teal);
         }
 
+        .altro-reparto-container {
+            margin-top: 1rem;
+            padding: 1.5rem;
+            background: rgba(13, 149, 168, 0.05);
+            border: 2px solid var(--goline-teal);
+            border-radius: 10px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .altro-reparto-container label {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            color: var(--goline-dark);
+        }
+
         .helper-text {
             font-size: 0.95rem;
             color: #64748b;
@@ -565,6 +580,14 @@
                             <input type="checkbox" id="amministrazione" name="reparti" value="Amministrazione">
                             <label for="amministrazione">Amministrazione</label>
                         </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="altro-reparto" name="reparti" value="Altro">
+                            <label for="altro-reparto">Altro</label>
+                        </div>
+                    </div>
+                    <div class="altro-reparto-container" id="altroRepartoContainer" style="display: none;">
+                        <label for="altroRepartoTesto">Specifica il reparto:</label>
+                        <input type="text" id="altroRepartoTesto" name="altroRepartoTesto" placeholder="Inserisci il nome del reparto">
                     </div>
                     <div class="error-message" id="repartiError">Seleziona almeno un reparto</div>
                 </div>
@@ -651,11 +674,29 @@
             document.getElementById('reportsError').classList.remove('show');
         });
 
+        document.getElementById('altroRepartoTesto').addEventListener('input', function() {
+            this.classList.remove('error');
+        });
+
         document.querySelectorAll('input[name="reparti"]').forEach(checkbox => {
             checkbox.addEventListener('change', function() {
                 document.getElementById('repartiGroup').classList.remove('error');
                 document.getElementById('repartiError').classList.remove('show');
             });
+        });
+
+        // Gestione checkbox "Altro" per mostrare/nascondere campo testo
+        document.getElementById('altro-reparto').addEventListener('change', function() {
+            const container = document.getElementById('altroRepartoContainer');
+            const input = document.getElementById('altroRepartoTesto');
+            
+            if (this.checked) {
+                container.style.display = 'block';
+                input.focus();
+            } else {
+                container.style.display = 'none';
+                input.value = '';
+            }
         });
 
         form.addEventListener('submit', function(e) {
@@ -702,6 +743,14 @@
                 document.getElementById('repartiError').classList.add('show');
             }
 
+            // Validazione "Altro reparto" se selezionato
+            const altroRepartoChecked = document.getElementById('altro-reparto').checked;
+            const altroRepartoTesto = document.getElementById('altroRepartoTesto').value.trim();
+            if (altroRepartoChecked && !altroRepartoTesto) {
+                errors.push('Specifica il nome del reparto in "Altro"');
+                document.getElementById('altroRepartoTesto').classList.add('error');
+            }
+
             // Validazione Report (almeno il primo)
             const report1 = document.getElementById('report1').value.trim();
             if (!report1) {
@@ -728,6 +777,7 @@
                 cognome: cognome,
                 email: email,
                 reparti: Array.from(checkboxes).map(cb => cb.value),
+                altroReparto: document.getElementById('altroRepartoTesto').value.trim(),
                 reports: [
                     document.getElementById('report1').value.trim(),
                     document.getElementById('report2').value.trim(),

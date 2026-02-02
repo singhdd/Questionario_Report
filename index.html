@@ -634,7 +634,7 @@ try {
 const response = await fetch(`${SERVER_URL}/api/health`);
 const data = await response.json();
 if (data.status === 'ok') {
-serverStatus.textContent = '✓ Server Connesso';
+serverStatus.textContent = '✓ Server Connesso (Server)';
 serverStatus.classList.remove('offline');
 } else {
 throw new Error('Server non risponde');
@@ -789,7 +789,7 @@ submitButton.textContent = 'Invia Questionario';
 }
 } catch (error) {
 console.error('Errore invio:', error);
-alert('Errore di connessione al server!\n\nAssicurati che il server Python sia avviato:\npython questionario_server_LOCAL.py');
+alert('Errore di connessione al server!\n\nAssicurati che il server Python sia avviato:\npython questionario_server_SERVER.py');
 submitButton.disabled = false;
 submitButton.textContent = 'Invia Questionario';
 }

@@ -602,6 +602,12 @@ Note e Problemi
 </div>
 
 <script>
+// CONFIGURAZIONE ENDPOINT
+// Cambia questo URL in base all'ambiente:
+// - Locale: 'http://localhost:5000/submit'
+// - Server: 'http://IP_SERVER:5000/submit' oppure l'URL del tuo server
+const API_ENDPOINT = 'http://localhost:5000/submit';
+
 const form = document.getElementById('reportForm');
 const formCard = document.getElementById('formCard');
 const successMessage = document.getElementById('successMessage');
@@ -722,24 +728,32 @@ const submitButton = form.querySelector('button[type="submit"]');
 submitButton.disabled = true;
 submitButton.textContent = 'Invio in corso...';
 
-// Invia i dati a Google Sheets
-fetch('https://script.google.com/macros/s/AKfycbwl9fYNC0bytDb--tEoxLbJ7XpBoZv56pZMG4Ml3yppdq2zlOx4R8AhiOy7b54J_Rk/exec', {
+// Invia i dati al server Flask locale
+fetch(API_ENDPOINT, {
 method: 'POST',
-mode: 'no-cors',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify(formData)
 })
-.then(() => {
+.then(response => response.json())
+.then(data => {
+if (data.status === 'success') {
 formCard.style.display = 'none';
 successMessage.style.display = 'block';
 window.scrollTo({ top: 0, behavior: 'smooth' });
+} else {
+// Errore di validazione dal server
+submitButton.disabled = false;
+submitButton.textContent = 'Invia Questionario';
+
+alert('Errore nella validazione: ' + (data.errors ? data.errors.join(', ') : data.message));
+}
 })
 .catch(error => {
-console.log('Dati inviati a Google Sheets');
-// Anche in caso di errore fetch (per via di no-cors), mostra successo
-formCard.style.display = 'none';
-successMessage.style.display = 'block';
-window.scrollTo({ top: 0, behavior: 'smooth' });
+submitButton.disabled = false;
+submitButton.textContent = 'Invia Questionario';
+
+alert('Errore di connessione al server. Verifica che il server Flask sia attivo.');
+console.error('Error:', error);
 });
 });
 

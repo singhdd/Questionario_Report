@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Questionario Report QlikView - Goline IT Services [LOCAL]</title>
+<title>Questionario Report QlikView - Goline IT Services</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -81,7 +81,7 @@ margin-bottom: 2rem;
 display: inline-block;
 }
 
-.env-badge {
+.server-status {
 background: #10b981;
 color: white;
 padding: 0.5rem 1rem;
@@ -90,6 +90,10 @@ font-size: 0.85rem;
 font-weight: 600;
 margin-top: 1rem;
 display: inline-block;
+}
+
+.server-status.offline {
+background: #ef4444;
 }
 
 h1 {
@@ -469,10 +473,10 @@ font-size: 1rem;
 <div class="logo-container">
 <h1 style="color: var(--goline-teal); font-size: 2.5rem; margin: 0;">GOLINE</h1>
 <p style="color: var(--goline-dark); font-size: 1.25rem; margin-top: 0.5rem; font-weight: 400;">IT Services</p>
-<div class="env-badge">💻 Salvataggio LOCALE</div>
+<div class="server-status" id="serverStatus">🔄 Verifica connessione...</div>
 </div>
 <h1>Questionario Report QlikView</h1>
-<p class="subtitle">Compila questo questionario per aiutarci a identificare i report QlikView più utilizzati nel tuo reparto.<br>Le tue risposte saranno fondamentali per pianificare la migrazione a Power BI.<br><small style="color: #94a3b8;">I dati verranno salvati in: C:\Migration\Questionario_Report_QlikView.xlsx</small></p>
+<p class="subtitle">Compila questo questionario per aiutarci a identificare i report QlikView più utilizzati nel tuo reparto.<br>Le tue risposte saranno fondamentali per pianificare la migrazione a Power BI.</p>
 </div>
 
 <div class="form-card" id="formCard">
@@ -609,8 +613,7 @@ Note e Problemi
 
 <div class="success-message" id="successMessage">
 <h2>✓ Questionario Inviato con Successo!</h2>
-<p>Grazie per aver completato il questionario. Le tue risposte sono state registrate correttamente nel file locale.</p>
-<p style="margin-top: 1rem; font-size: 0.95rem; color: #94a3b8;">I dati JSON sono visualizzati nella console del browser (F12).</p>
+<p>Grazie per aver completato il questionario. Le tue risposte sono state registrate correttamente in Excel.</p>
 </div>
 </div>
 
@@ -620,6 +623,31 @@ const formCard = document.getElementById('formCard');
 const successMessage = document.getElementById('successMessage');
 const validationSummary = document.getElementById('validationSummary');
 const validationList = document.getElementById('validationList');
+const serverStatus = document.getElementById('serverStatus');
+
+// URL del server Python Flask
+const SERVER_URL = 'http://localhost:5000';
+
+// Verifica connessione server all'avvio
+async function checkServerStatus() {
+try {
+const response = await fetch(`${SERVER_URL}/api/health`);
+const data = await response.json();
+if (data.status === 'ok') {
+serverStatus.textContent = '✓ Server Connesso';
+serverStatus.classList.remove('offline');
+} else {
+throw new Error('Server non risponde');
+}
+} catch (error) {
+serverStatus.textContent = '✗ Server Offline';
+serverStatus.classList.add('offline');
+console.error('Errore connessione server:', error);
+}
+}
+
+// Verifica al caricamento pagina
+checkServerStatus();
 
 // Rimuovi errori quando l'utente inizia a digitare
 document.getElementById('nome').addEventListener('input', function() {
@@ -649,7 +677,7 @@ document.getElementById('repartiError').classList.remove('show');
 });
 });
 
-form.addEventListener('submit', function(e) {
+form.addEventListener('submit', async function(e) {
 e.preventDefault();
 
 // Reset errori
@@ -733,52 +761,38 @@ timestamp: new Date().toISOString()
 // Disabilita pulsante
 const submitButton = form.querySelector('button[type="submit"]');
 submitButton.disabled = true;
-submitButton.textContent = 'Elaborazione...';
+submitButton.textContent = 'Invio in corso...';
 
-// SALVATAGGIO LOCALE - Mostra i dati nella console
-console.log('=== DATI QUESTIONARIO (da salvare in Excel locale) ===');
-console.log(JSON.stringify(formData, null, 2));
-console.log('======================================================');
-console.log('ISTRUZIONI:');
-console.log('1. Copia questi dati JSON');
-console.log('2. Apri il notebook Python: questionario_excel_LOCAL.ipynb');
-console.log('3. Usa la funzione processa_questionario_json() con questi dati');
-console.log('4. I dati verranno aggiunti al file Excel in C:\\Migration\\');
-
-// In un ambiente reale, qui invieresti i dati a un backend Python (Flask/FastAPI)
-// Esempio con fetch (richiede un server Python locale):
-/*
-fetch('http://localhost:5000/api/questionario', {
+try {
+// INVIO AUTOMATICO AL SERVER PYTHON
+const response = await fetch(`${SERVER_URL}/api/questionario`, {
 method: 'POST',
-headers: { 'Content-Type': 'application/json' },
+headers: {
+'Content-Type': 'application/json',
+},
 body: JSON.stringify(formData)
-})
-.then(response => response.json())
-.then(data => {
-if (data.status === 'success') {
+});
+
+const result = await response.json();
+
+if (result.status === 'success') {
+console.log('✓ Dati salvati in Excel!', result);
 formCard.style.display = 'none';
 successMessage.style.display = 'block';
 window.scrollTo({ top: 0, behavior: 'smooth' });
 } else {
-alert('Errore: ' + data.message);
+// Errore validazione server
+console.error('Errori validazione:', result.errors);
+alert('Errore validazione:\n' + result.errors.join('\n'));
 submitButton.disabled = false;
 submitButton.textContent = 'Invia Questionario';
 }
-})
-.catch(error => {
-console.error('Errore:', error);
-alert('Errore di connessione al server locale');
+} catch (error) {
+console.error('Errore invio:', error);
+alert('Errore di connessione al server!\n\nAssicurati che il server Python sia avviato:\npython questionario_server_LOCAL.py');
 submitButton.disabled = false;
 submitButton.textContent = 'Invia Questionario';
-});
-*/
-
-// Per ora, simuliamo il successo
-setTimeout(() => {
-formCard.style.display = 'none';
-successMessage.style.display = 'block';
-window.scrollTo({ top: 0, behavior: 'smooth' });
-}, 500);
+}
 });
 
 // Gestione click su checkbox items

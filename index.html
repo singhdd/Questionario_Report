@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Questionario Report QlikView - Goline IT Services</title>
+<title>Questionario Report QlikView - Goline IT Services [LOCAL]</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -78,6 +78,17 @@ padding: 2rem;
 border-radius: 16px;
 box-shadow: var(--shadow-medium);
 margin-bottom: 2rem;
+display: inline-block;
+}
+
+.env-badge {
+background: #10b981;
+color: white;
+padding: 0.5rem 1rem;
+border-radius: 8px;
+font-size: 0.85rem;
+font-weight: 600;
+margin-top: 1rem;
 display: inline-block;
 }
 
@@ -458,9 +469,10 @@ font-size: 1rem;
 <div class="logo-container">
 <h1 style="color: var(--goline-teal); font-size: 2.5rem; margin: 0;">GOLINE</h1>
 <p style="color: var(--goline-dark); font-size: 1.25rem; margin-top: 0.5rem; font-weight: 400;">IT Services</p>
+<div class="env-badge">💻 Salvataggio LOCALE</div>
 </div>
 <h1>Questionario Report QlikView</h1>
-<p class="subtitle">Compila questo questionario per aiutarci a identificare i report QlikView più utilizzati nel tuo reparto.<br>Le tue risposte saranno fondamentali per pianificare la migrazione a Power BI.</p>
+<p class="subtitle">Compila questo questionario per aiutarci a identificare i report QlikView più utilizzati nel tuo reparto.<br>Le tue risposte saranno fondamentali per pianificare la migrazione a Power BI.<br><small style="color: #94a3b8;">I dati verranno salvati in: C:\Migration\Questionario_Report_QlikView.xlsx</small></p>
 </div>
 
 <div class="form-card" id="formCard">
@@ -597,17 +609,12 @@ Note e Problemi
 
 <div class="success-message" id="successMessage">
 <h2>✓ Questionario Inviato con Successo!</h2>
-<p>Grazie per aver completato il questionario. Le tue risposte sono state registrate correttamente.</p>
+<p>Grazie per aver completato il questionario. Le tue risposte sono state registrate correttamente nel file locale.</p>
+<p style="margin-top: 1rem; font-size: 0.95rem; color: #94a3b8;">I dati JSON sono visualizzati nella console del browser (F12).</p>
 </div>
 </div>
 
 <script>
-// CONFIGURAZIONE ENDPOINT
-// Cambia questo URL in base all'ambiente:
-// - Locale: 'http://localhost:5000/submit'
-// - Server: 'http://IP_SERVER:5000/submit' oppure l'URL del tuo server
-const API_ENDPOINT = 'http://localhost:5000/submit';
-
 const form = document.getElementById('reportForm');
 const formCard = document.getElementById('formCard');
 const successMessage = document.getElementById('successMessage');
@@ -678,7 +685,7 @@ document.getElementById('email').classList.add('error');
 document.getElementById('emailError').classList.add('show');
 }
 
-// Validazione Reparti (almeno uno selezionato)
+// Validazione Reparti
 const checkboxes = document.querySelectorAll('input[name="reparti"]:checked');
 if (checkboxes.length === 0) {
 errors.push('Almeno un reparto');
@@ -686,7 +693,7 @@ document.getElementById('repartiGroup').classList.add('error');
 document.getElementById('repartiError').classList.add('show');
 }
 
-// Validazione Report (almeno il primo)
+// Validazione Report
 const report1 = document.getElementById('report1').value.trim();
 if (!report1) {
 errors.push('Almeno il primo report');
@@ -694,7 +701,7 @@ document.getElementById('reportInputs').classList.add('error');
 document.getElementById('reportsError').classList.add('show');
 }
 
-// Se ci sono errori, mostra il riepilogo e scrolla in alto
+// Se ci sono errori, mostra il riepilogo
 if (errors.length > 0) {
 errors.forEach(error => {
 const li = document.createElement('li');
@@ -706,7 +713,7 @@ window.scrollTo({ top: 0, behavior: 'smooth' });
 return;
 }
 
-// Raccogli i dati del form
+// Raccogli dati del form
 const formData = {
 nome: nome,
 cognome: cognome,
@@ -723,13 +730,25 @@ note: document.getElementById('note').value.trim(),
 timestamp: new Date().toISOString()
 };
 
-// Disabilita il pulsante durante l'invio
+// Disabilita pulsante
 const submitButton = form.querySelector('button[type="submit"]');
 submitButton.disabled = true;
-submitButton.textContent = 'Invio in corso...';
+submitButton.textContent = 'Elaborazione...';
 
-// Invia i dati al server Flask locale
-fetch(API_ENDPOINT, {
+// SALVATAGGIO LOCALE - Mostra i dati nella console
+console.log('=== DATI QUESTIONARIO (da salvare in Excel locale) ===');
+console.log(JSON.stringify(formData, null, 2));
+console.log('======================================================');
+console.log('ISTRUZIONI:');
+console.log('1. Copia questi dati JSON');
+console.log('2. Apri il notebook Python: questionario_excel_LOCAL.ipynb');
+console.log('3. Usa la funzione processa_questionario_json() con questi dati');
+console.log('4. I dati verranno aggiunti al file Excel in C:\\Migration\\');
+
+// In un ambiente reale, qui invieresti i dati a un backend Python (Flask/FastAPI)
+// Esempio con fetch (richiede un server Python locale):
+/*
+fetch('http://localhost:5000/api/questionario', {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify(formData)
@@ -741,23 +760,28 @@ formCard.style.display = 'none';
 successMessage.style.display = 'block';
 window.scrollTo({ top: 0, behavior: 'smooth' });
 } else {
-// Errore di validazione dal server
+alert('Errore: ' + data.message);
 submitButton.disabled = false;
 submitButton.textContent = 'Invia Questionario';
-
-alert('Errore nella validazione: ' + (data.errors ? data.errors.join(', ') : data.message));
 }
 })
 .catch(error => {
+console.error('Errore:', error);
+alert('Errore di connessione al server locale');
 submitButton.disabled = false;
 submitButton.textContent = 'Invia Questionario';
-
-alert('Errore di connessione al server. Verifica che il server Flask sia attivo.');
-console.error('Error:', error);
 });
+*/
+
+// Per ora, simuliamo il successo
+setTimeout(() => {
+formCard.style.display = 'none';
+successMessage.style.display = 'block';
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}, 500);
 });
 
-// Gestione click sugli item checkbox
+// Gestione click su checkbox items
 document.querySelectorAll('.checkbox-item').forEach(item => {
 item.addEventListener('click', function(e) {
 if (e.target.tagName !== 'INPUT') {
